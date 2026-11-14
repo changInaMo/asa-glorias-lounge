@@ -130,7 +130,7 @@ h1, h2 { margin: 0; font-weight: 900; text-wrap: balance; }
 .status b { color: var(--gold); }
 
 /* cards */
-.card { --w: 8.2cqw; width: var(--w); height: calc(var(--w) * 1.38); border-radius: calc(var(--w) * .09); background: var(--card); color: #111; position: relative; flex: none; box-shadow: 0 .3cqw .9cqw rgba(0,0,0,.45); font-family: var(--font-card); overflow: hidden; }
+.card { --w: 7.6cqw; width: var(--w); height: calc(var(--w) * 1.38); border-radius: calc(var(--w) * .09); background: var(--card); color: #111; position: relative; flex: none; box-shadow: 0 .3cqw .9cqw rgba(0,0,0,.45); font-family: var(--font-card); overflow: hidden; }
 .card.red { color: #d0211b; }
 .card .cr { position: absolute; left: 9%; top: 3%; font-size: calc(var(--w) * .42); font-weight: 700; line-height: 1; letter-spacing: -.04em; }
 .card .cs { position: absolute; left: 11%; top: 34%; font-size: calc(var(--w) * .3); line-height: 1; font-family: var(--font-body); }
@@ -141,7 +141,7 @@ h1, h2 { margin: 0; font-weight: 900; text-wrap: balance; }
 .card.mine { box-shadow: 0 0 0 .3cqw var(--green), 0 .3cqw .9cqw rgba(0,0,0,.45); }
 .card.dim { filter: brightness(.55) saturate(.5); }
 /* ---- card motion ---- */
-.board { --step: 9cqw; --dy: -18.8cqw; }
+.board { --step: 8.4cqw; --dy: -18.8cqw; }
 .card.anim-flop, .card.anim-turn, .card.anim-mine { --flipdur: 1250ms; }
 .card.anim-flop { animation: flopIn 1250ms cubic-bezier(.25,.7,.25,1) both; }
 @keyframes flopIn {
@@ -183,7 +183,7 @@ h1, h2 { margin: 0; font-weight: 900; text-wrap: balance; }
   100% { opacity: 0; transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(340deg) scale(.6); }
 }
 .card.sm { --w: 3cqw; border-radius: 4px; }
-.card.lg { --w: 6.4cqw; }
+.card.lg { --w: 5.6cqw; }
 
 /* seats */
 .seat { position: absolute; transform: translate(-50%, -50%); width: 8cqw; display: grid; justify-items: center; z-index: 5; }
@@ -222,14 +222,19 @@ h1, h2 { margin: 0; font-weight: 900; text-wrap: balance; }
 
 /* my hand at my seat */
 .myhand { position: absolute; z-index: 6; display: flex; flex-direction: column; align-items: center; gap: .6cqw; transform: translateY(-50%); }
-.mylabel { font-weight: 900; color: var(--gold); background: rgba(10, 6, 18, .82); border: 1px solid rgba(244,201,76,.45); border-radius: 999px; padding: .25cqw 1.3cqw; font-size: max(12px, 1.45cqw); white-space: nowrap; box-shadow: 0 .3cqw .8cqw rgba(0,0,0,.45); }
+.mylabel { display: grid; justify-items: center; gap: .35cqw; font-weight: 900; color: var(--gold); background: rgba(10, 6, 18, .85); border: 1px solid rgba(244,201,76,.45); border-radius: 1.4cqw; padding: .3cqw 1.2cqw .55cqw; font-size: max(12px, 1.45cqw); white-space: nowrap; box-shadow: 0 .3cqw .8cqw rgba(0,0,0,.45); }
+/* hand strength "health bar" */
+.hbar { position: relative; width: max(70px, 9cqw); height: max(9px, 1cqw); border-radius: 999px; background: #2a0f12; border: 1px solid rgba(255,255,255,.25); overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,.6); }
+.hbar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: inherit; transition: width .6s cubic-bezier(.3,.8,.3,1), background .4s; background: linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,0) 55%), var(--hb); box-shadow: 0 0 8px var(--hb); }
+.hbar.low { --hb: #e2463b; } .hbar.mid { --hb: #f2b134; } .hbar.high { --hb: #3ccf6a; }
+.hbar::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 calc(10% - 1px), rgba(10,6,18,.75) calc(10% - 1px) 10%); pointer-events: none; }
 .mylabel.folded { color: var(--muted); border-color: rgba(255,255,255,.15); }
 .seat.bust .av { filter: grayscale(1) brightness(.45); border-color: #333; box-shadow: none; }
 .seat.bust .tag { opacity: .55; }
 .myhand .cards { display: flex; }
 .myhand .cards .card { transform: var(--rest); }
 .myhand .cards .card:first-child { --rest: rotate(-4deg); }
-.myhand .cards .card + .card { margin-left: -2.6cqw; --rest: rotate(6deg) translateY(.4cqw); }
+.myhand .cards .card + .card { margin-left: -2.3cqw; --rest: rotate(6deg) translateY(.4cqw); }
 .hl { display: grid; gap: 3px; min-width: 150px; align-content: center; }
 .hl .hn { font-weight: 900; color: var(--gold); font-size: 22px; line-height: 1.05; text-shadow: 0 2px 4px rgba(0,0,0,.6); }
 .hl .hd { font-weight: 800; font-size: 14px; }
@@ -434,7 +439,8 @@ h1, h2 { margin: 0; font-weight: 900; text-wrap: balance; }
   .status { font-size: 3.8cqw; }
   .board { gap: 1.4cqw; --step: 15.9cqw; --dy: -53cqw; }
   .statusline { top: 35.5%; width: 70cqw; }
-  .mylabel { font-size: 3.4cqw; padding: .5cqw 2.4cqw; }
+  .mylabel { font-size: 3.4cqw; padding: .6cqw 2.4cqw 1cqw; border-radius: 3cqw; gap: .7cqw; }
+  .hbar { width: 22cqw; height: 2.2cqw; }
   .card { --w: 14.5cqw; }
   .card.sm { --w: 6.4cqw; }
   .card.lg { --w: 15cqw; }
@@ -473,6 +479,54 @@ h1, h2 { margin: 0; font-weight: 900; text-wrap: balance; }
   .brand img { width: 84px; height: 84px; }
   .room-deco .suit { font-size: 22vh; }
 }
+
+/* ---------- phones held sideways: table fills the screen, buttons stack down the right ---------- */
+@media (orientation: landscape) and (max-height: 520px) {
+  .app { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto minmax(0, 1fr); padding: 0 env(safe-area-inset-right) 0 env(safe-area-inset-left); }
+  .hud { grid-column: 1 / -1; padding: 4px 8px 0; gap: 6px; }
+  .hud .iconbtn { width: 34px; height: 34px; border-radius: 10px; }
+  .hud .iconbtn svg { width: 18px; height: 18px; }
+  .hud .btn.sm { padding: 5px 10px; }
+  .hud .codechip { padding: 3px 8px; font-size: 13px; }
+  .hud .info { display: flex; gap: 8px; align-items: baseline; }
+  .hud .info b { font-size: 13px; }
+  .hud .info span { font-size: 11px !important; }
+  .brandline { display: none; }
+  .stage { grid-column: 1; grid-row: 2; padding: 0 2px 4px; }
+  .table-wrap { width: min(100%, calc((100dvh - 44px) * 1.7)); }
+  #banners { top: 0; }
+  .bar { grid-column: 2; grid-row: 2; width: 172px; flex-direction: column; align-items: stretch; justify-content: space-between; gap: 8px; padding: 4px 10px calc(8px + env(safe-area-inset-bottom)) 0; }
+  .bar .left { justify-content: flex-end; }
+  .bar .left .iconbtn { width: 38px; height: 38px; }
+  .bar .right { margin-left: 0; flex-direction: column; align-items: stretch; flex-wrap: nowrap; gap: 8px; }
+  .bar .msg { margin: 0; font-size: 12.5px; text-align: center; }
+  .clock { margin: 0; text-align: center; font-size: 15px; }
+  .pbtn { min-width: 0; width: 100%; height: 44px; font-size: 15px; padding: 0 10px; gap: 8px; border-radius: 12px; }
+  .pbtn .dot { width: 16px; height: 16px; }
+  .raisepanel { right: calc(100% + 6px); bottom: 8px; width: min(340px, 60vw); padding: 10px; gap: 8px; }
+  .raisepanel .pbtn { height: 42px; }
+  .toast { bottom: 14px; }
+  .soundhint { top: 46px; }
+  /* smaller cards on phones */
+  .card { --w: 6.8cqw; }
+  .card.lg { --w: 5.4cqw; }
+  .board { gap: .7cqw; --step: 7.5cqw; }
+  .myhand .cards .card + .card { margin-left: -2.2cqw; }
+  .mylabel { font-size: 11px; padding: 2px 8px 4px; border-radius: 8px; gap: 3px; }
+  .hbar { width: 58px; height: 6px; }
+}
+/* ---------- phones held upright at a table: ask to turn sideways ---------- */
+.rotate { display: none; position: fixed; inset: 0; z-index: 60; place-items: center; text-align: center; padding: 28px; background: radial-gradient(120% 70% at 50% 0%, var(--room-top) 0%, var(--room) 55%, var(--room-deep) 100%); }
+.rotate .box { display: grid; gap: 14px; justify-items: center; max-width: 320px; }
+.rotate .phone { width: 64px; height: 104px; border: 4px solid var(--gold); border-radius: 14px; position: relative; animation: turnPhone 2.4s ease-in-out infinite; box-shadow: 0 0 24px rgba(244,201,76,.35); }
+.rotate .phone::after { content: ""; position: absolute; left: 50%; bottom: 6px; width: 14px; height: 4px; margin-left: -7px; border-radius: 2px; background: var(--gold); }
+@keyframes turnPhone { 0%, 25% { transform: rotate(0); } 55%, 85% { transform: rotate(-90deg); } 100% { transform: rotate(0); } }
+.rotate h2 { font-size: 24px; }
+.rotate p { margin: 0; color: var(--muted); }
+.rotate .link { background: none; border: 0; color: var(--muted); text-decoration: underline; font-weight: 700; padding: 6px; }
+@media (orientation: portrait) and (max-width: 760px) {
+  body.at-table:not(.allow-portrait) .rotate { display: grid; }
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .toss { display: none; }
@@ -483,6 +537,15 @@ h1, h2 { margin: 0; font-weight: 900; text-wrap: balance; }
 <div class="room-deco" aria-hidden="true"><div class="lights"></div><div class="suit s1">♠</div><div class="suit s2">♣</div></div>
 <div id="root">
   <div class="center-screen"><div class="box"><div class="spinner"></div><div class="muted">Shuffling up…</div></div></div>
+</div>
+<div class="rotate" id="rotate" role="dialog" aria-labelledby="rotT">
+  <div class="box">
+    <div class="phone" aria-hidden="true"></div>
+    <h2 id="rotT">Turn your phone sideways</h2>
+    <p>The table is made for landscape. If it doesn't turn, switch off rotation lock.</p>
+    <button class="btn gold hidden" id="goLandscape">Go landscape</button>
+    <button class="link" id="stayUpright">Keep playing upright</button>
+  </div>
 </div>
 <div id="connBanner" class="conn hidden"><div class="banner">Reconnecting to the table…</div></div>
 <script src="engine.js"></script>
@@ -505,12 +568,13 @@ const LADDER_EX = ["A♠ 9♦ 7♣ 4♥ 2♠", "K♠ K♥", "Q♠ Q♦ 5♣ 5♥
 // Seat spots around the table (percent of the table area), starting at the bottom centre and going clockwise.
 // The dealer stands at the top centre, so no seat goes there.
 const SPOTS = {
-  wide: { 8: [[50, 88], [25, 87], [8, 67], [10, 41], [26, 27], [74, 27], [92, 62], [75, 87]],
+  wide: { 8: [[50, 88], [23, 87], [8, 67], [10, 41], [26, 27], [74, 27], [92, 62], [77.5, 87]],
           6: [[50, 88], [18, 84], [8, 52], [26, 27], [74, 27], [92, 55]] },
   tall: { 8: [[50, 88], [16, 80], [9, 59], [11, 37], [21, 18], [79, 18], [91, 43], [86, 70]],
           6: [[50, 88], [13, 74], [10, 42], [23, 18], [77, 18], [89, 52]] },
 };
 const tallMQ = window.matchMedia("(max-width: 760px) and (orientation: portrait)");
+const phoneLandMQ = window.matchMedia("(orientation: landscape) and (max-height: 520px)");
 const $ = (sel, r = document) => r.querySelector(sel);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const fmt = (n) => Number(n || 0).toLocaleString("en-US");
@@ -523,6 +587,7 @@ const ICON = {
   menu: '<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>',
   chat: '<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg>',
   cards: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="11" height="15" rx="2"/><path d="M14 7.5l4.3 1.2a2 2 0 0 1 1.4 2.4l-2.6 9.4"/></svg>',
+  full: '<svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>',
   musicOn: '<svg viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>',
   musicOff: '<svg viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/><path d="M3 3l18 18"/></svg>',
   soundOn: '<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>',
@@ -816,6 +881,7 @@ function turnKey(t) {
 function potTotal(t) { return t.seats.reduce((a, s) => a + (s && s.inHand ? s.committed || 0 : 0), 0); }
 
 function render() {
+  document.body.classList.toggle("at-table", S.screen === "table");
   if (S.screen === "loading") return;
   if (S.screen === "lobby") return renderLobby();
   if (S.screen === "table") { if (!$("#tableApp")) buildTableShell(); renderTable(); }
@@ -931,6 +997,7 @@ function buildTableShell() {
       <button class="btn sm" id="copyBtn">Invite</button>
       <button class="iconbtn musicbtn" id="musicBtn"></button>
       <button class="iconbtn sfxbtn" id="sfxBtn"></button>
+      ${document.documentElement.requestFullscreen && matchMedia("(pointer: coarse)").matches ? `<button class="iconbtn" id="fsBtn" aria-label="Full screen" title="Full screen">${ICON.full}</button>` : ""}
       <div class="info"><span class="brandline">Asa Gloria’s Lounge</span><b id="tName">Table</b><span id="stakes"></span><span id="clock" class="clockline"></span></div>
     </header>
     <section class="stage">
@@ -956,10 +1023,18 @@ function buildTableShell() {
   $("#menuBtn").addEventListener("click", () => openDrawer(S.tab || "chat"));
   bindMusicBtn($("#musicBtn"));
   bindSfxBtn($("#sfxBtn"));
+  const fs = $("#fsBtn");
+  if (fs) fs.addEventListener("click", async () => {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else { await document.documentElement.requestFullscreen({ navigationUI: "hide" }); if (canLock) screen.orientation.lock("landscape").catch(() => {}); }
+    } catch (e) { toast("Full screen isn't available in this browser."); }
+  });
   $("#copyBtn").addEventListener("click", showInvite);
   if (!S.keyBound) {
     document.addEventListener("keydown", onKey);
     tallMQ.addEventListener("change", () => { if (S.screen === "table") renderFelt(); });
+    phoneLandMQ.addEventListener("change", () => { if (S.screen === "table") renderFelt(); });
     S.keyBound = true;
   }
   S.sideKey = "";
@@ -1037,7 +1112,13 @@ function renderBanners() {
 }
 
 /* ------------------------------------------------------------------ the table itself */
-function spotsFor(t) { const set = tallMQ.matches ? SPOTS.tall : SPOTS.wide; return set[t.seats.length] || set[8]; }
+function spotsFor(t) {
+  const set = tallMQ.matches ? SPOTS.tall : SPOTS.wide;
+  const spots = set[t.seats.length] || set[8];
+  // sideways phone: name tags can't shrink below a readable size, so the bottom corners sit a little further out
+  if (phoneLandMQ.matches && spots.length === 8) return spots.map((p, k) => (k === 1 ? [20, 87] : k === 7 ? [80, 87] : p));
+  return spots;
+}
 function seatPos(t, i) {
   const n = t.seats.length;
   const mine = mySeatIdx(t);
@@ -1049,7 +1130,10 @@ function seatPos(t, i) {
   // the dealer button sits beside the player, toward the middle of the table, clear of their bet
   const side = x < 50 ? 1 : -1, off = tall ? (y < 25 ? 18 : 12) : (y < 35 ? 14 : 8); // top-row seats: further out, clear of revealed cards
   let dx = x + side * off, dy = y + (52 - y) * 0.15;
-  if (!tall && y > 80 && (k === 1 || k === n - 1)) { bx = x + (50 - x) * 0.25; by = y - 16; } // bottom corners: bet goes up, away from your cards
+  if (!tall && y > 80 && (k === 1 || k === n - 1)) {
+    // bottom corners: bet goes up beside them, clear of your cards (on a sideways phone, straight above them)
+    if (phoneLandMQ.matches) { bx = x; by = y - 16.5; } else { bx = x + (50 - x) * 0.14; by = y - 15; }
+  }
   if (k === 0) {
     // your own seat: your bet goes up-left of you and the button sits on your left, so your cards cover neither
     [bx, by] = tall ? [33, 78] : [40.5, 76.5];
@@ -1258,11 +1342,19 @@ function renderFelt() {
       <div class="tag"><span class="nm">${esc(s.name)}</span><span class="ch num">${fmt(s.stack - (wonBy[i] || 0))}</span></div>
     </div>`);
     if (isMe && s.inHand && t.myHole) {
-      const left = tallMQ.matches ? p.x + 9 : p.x + 4.6; // to the right of your avatar, so your SB/BB/Check label stays visible
+      const left = tallMQ.matches ? p.x + 9 : p.x + 6.5; // to the right of your avatar, clear of your SB/BB/Check label and chip count
       const top = tallMQ.matches ? p.y - 7 : p.y - 6.25;
-      const label = s.folded ? "Folded" : handLabel(E.describe(t.myHole, shownBoard(t)).name);
+      const d = E.describe(t.myHole, shownBoard(t));
+      const label = s.folded ? "Folded" : handLabel(d.name);
+      let bar = "";
+      if (!s.folded && (isActive(t) || hold)) {
+        // where the hand sits in the rankings: High Card = 1 ... Royal Flush = 10 (no odds, just the ladder)
+        const level = d.name === "Royal flush" ? 10 : d.rank + 1;
+        const lvl = level >= 6 ? "high" : level >= 3 ? "mid" : "low";
+        bar = `<div class="hbar ${lvl}" role="meter" aria-valuemin="1" aria-valuemax="10" aria-valuenow="${level}" aria-label="Hand strength: ${esc(label)}, ${level} of 10" title="${esc(label)}: ${level} of 10 on the hand rankings"><i style="width:${level * 10}%"></i></div>`;
+      }
       html.push(`<div class="myhand" style="left:${left}%;top:${top}%"><div class="cards">${t.myHole.map((c, r) => cardWith(c, "lg" + (s.folded ? " dim" : ""), dealMotion(t, i, r, left + 5 + r * 4, top, true))).join("")}</div>
-        <div class="mylabel${s.folded ? " folded" : ""}">${esc(label)}</div></div>`);
+        <div class="mylabel${s.folded ? " folded" : ""}">${esc(label)}${bar}</div></div>`);
     }
     const ft = S.fx.folds[i];
     if (ft && s.inHand && s.folded) {
@@ -1645,6 +1737,19 @@ function tick() {
   const clk = $("#myClock"); if (clk) clk.textContent = Math.ceil(left / 1000) + "s";
 }
 
+// Android can switch to full-screen landscape from a button; iPhones can't, so they just get the prompt.
+const canLock = !!(document.documentElement.requestFullscreen && screen.orientation && screen.orientation.lock);
+async function goLandscape() {
+  try {
+    if (!document.fullscreenElement) await document.documentElement.requestFullscreen({ navigationUI: "hide" });
+    await screen.orientation.lock("landscape");
+  } catch (e) { toast("Turn your phone sideways. If it doesn't turn, switch off rotation lock."); }
+}
+(() => {
+  const gl = $("#goLandscape"); if (canLock) gl.classList.remove("hidden");
+  gl.addEventListener("click", goLandscape);
+  $("#stayUpright").addEventListener("click", () => { document.body.classList.add("allow-portrait"); renderFelt(); });
+})();
 window.addEventListener("hashchange", route);
 setInterval(tick, 250);
 // a soft ripple wherever a button is pressed
