@@ -480,6 +480,27 @@ h1, h2 { margin: 0; font-weight: 900; text-wrap: balance; }
   .room-deco .suit { font-size: 22vh; }
 }
 
+
+/* ---------- quick chat: animated emojis and voice clips ---------- */
+.reacts { position: absolute; inset: 0; z-index: 9; pointer-events: none; }
+.react { position: absolute; transform: translate(-50%, -50%); animation: reactIn .45s cubic-bezier(.3,1.6,.5,1) both, reactOut .4s ease-in var(--out, 3s) forwards; }
+.react.emoji { width: 12cqw; height: 12cqw; filter: drop-shadow(0 .6cqw 1cqw rgba(0,0,0,.55)); }
+.react.emoji img { width: 100%; height: 100%; display: block; }
+@keyframes reactIn { from { transform: translate(-50%, -50%) scale(.2); opacity: 0; } }
+@keyframes reactOut { to { transform: translate(-50%, -85%) scale(.7); opacity: 0; } }
+.qc { position: fixed; left: 14px; bottom: calc(80px + env(safe-area-inset-bottom)); z-index: 22; width: min(372px, calc(100vw - 28px)); background: rgba(30, 16, 56, .97); border: 1px solid #8a6cf0; border-radius: 16px; padding: 12px; display: grid; gap: 10px; box-shadow: 0 10px 40px rgba(0,0,0,.6); animation: popIn .2s ease both; }
+.qc h4 { margin: 0; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.qc .emos { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.qc .emos button { aspect-ratio: 1; border-radius: 12px; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.05); padding: 4px; display: grid; place-items: center; }
+.qc .emos button:hover { background: rgba(255,255,255,.14); }
+.qc .emos img { width: 100%; height: 100%; object-fit: contain; }
+.qc .voices { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.qc .voices button { display: flex; align-items: center; gap: 8px; min-height: 38px; padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,.12); background: rgba(122, 60, 255, .22); color: #fff; font-weight: 800; font-size: 14px; text-align: left; }
+.qc .voices button:hover { background: rgba(122, 60, 255, .45); }
+.qc .voices svg { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.qc button:active { transform: scale(.94); }
+.qc .cool { opacity: .45; pointer-events: none; }
+
 /* ---------- phones held sideways: table fills the screen, buttons stack down the right ---------- */
 @media (orientation: landscape) and (max-height: 520px) {
   .app { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto minmax(0, 1fr); padding: 0 env(safe-area-inset-right) 0 env(safe-area-inset-left); }
@@ -514,6 +535,9 @@ h1, h2 { margin: 0; font-weight: 900; text-wrap: balance; }
   .myhand .cards .card + .card { margin-left: -2.2cqw; }
   .mylabel { font-size: 11px; padding: 2px 8px 4px; border-radius: 8px; gap: 3px; }
   .hbar { width: 58px; height: 6px; }
+  .qc { left: auto; right: 186px; bottom: auto; top: 46px; width: min(340px, calc(100vw - 200px)); max-height: calc(100dvh - 54px); overflow: auto; padding: 10px; gap: 8px; }
+  .qc .emos img { max-height: 44px; }
+  .qc .voices button { min-height: 32px; font-size: 13px; padding: 4px 8px; }
 }
 /* ---------- phones held upright at a table: ask to turn sideways ---------- */
 .rotate { display: none; position: fixed; inset: 0; z-index: 60; place-items: center; text-align: center; padding: 28px; background: radial-gradient(120% 70% at 50% 0%, var(--room-top) 0%, var(--room) 55%, var(--room-deep) 100%); }
@@ -592,6 +616,7 @@ const ICON = {
   musicOff: '<svg viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/><path d="M3 3l18 18"/></svg>',
   soundOn: '<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>',
   soundOff: '<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9.5l5 5M22 9.5l-5 5"/></svg>',
+  smile: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0M9 9.5h.01M15 9.5h.01"/></svg>',
   link: '<svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
 };
 
@@ -685,6 +710,90 @@ function unlockAudio() {
   if (ctx.state !== "running") ctx.resume().then(updateSoundHint).catch(() => {});
   loadSfx();
 }
+
+/* ------------------------------------------------------------------ quick chat */
+// Seated players can pop an animated emoji over their avatar or play a short voice line
+// that everyone at the table hears. The server checks the ids and keeps people from spamming.
+const QC_EMOJI = [["grin", "Smile"], ["wink", "Wink"], ["rofl", "Laughing"], ["cry", "Crying"], ["vomit", "Gross"]];
+const QC_VOICE = [["halaka", "Hala ka"], ["kupal", "Kupal"], ["meow", "Meow"], ["paldo", "Paldooo"], ["pwede", "Pwede to Gagi"], ["walangkanin", "Walang Kanin"], ["aww", "Awwww"], ["gaee", "Gaeee"]];
+const VOICE_MS = { aww: 3240, gaee: 1670, halaka: 2640, kupal: 10370, meow: 1230, paldo: 4080, pwede: 1380, walangkanin: 3340 };
+const VOICE_NAME = Object.fromEntries(QC_VOICE);
+const voice = { bufs: {}, loading: {} };
+function loadVoice(id) {
+  const ctx = musicCtx();
+  if (!ctx || voice.bufs[id]) return Promise.resolve(voice.bufs[id]);
+  if (!voice.loading[id]) voice.loading[id] = fetch(`vm/${id}.mp3`).then((r) => r.arrayBuffer())
+    .then((ab) => new Promise((res, rej) => ctx.decodeAudioData(ab, res, rej)))
+    .then((b) => (voice.bufs[id] = b)).catch(() => { voice.loading[id] = null; });
+  return voice.loading[id];
+}
+function loadVoices() { QC_VOICE.forEach(([id]) => loadVoice(id)); }
+function playVoice(id) {
+  const asked = Date.now();
+  loadVoice(id).then((buf) => {
+    const ctx = music.ctx;
+    // a clip that took too long to download is skipped rather than played late
+    if (!buf || !sfx.on || !ctx || ctx.state !== "running" || Date.now() - asked > 2500) return;
+    const src = ctx.createBufferSource(); src.buffer = buf;
+    src.connect(sfx.gain || ctx.destination); src.start();
+  });
+}
+function preloadEmojis() {
+  if (S.emojiImgs) return;
+  S.emojiImgs = QC_EMOJI.map(([id]) => { const im = new Image(); im.src = `emoji/${id}.webp`; return im; });
+}
+function showReact(m) {
+  if (m.kind === "voice") { if (VOICE_NAME[m.id]) playVoice(m.id); return; } // voice lines are sound only
+  const t = S.table, box = $("#reacts");
+  if (!t || !box || !t.seats[m.seat]) return;
+  // place it on the avatar as drawn right now
+  const br = box.getBoundingClientRect();
+  const av = document.querySelector(`#felt [data-seat="${m.seat}"] .av`);
+  let x, y;
+  if (av && br.width) {
+    const r = av.getBoundingClientRect();
+    x = ((r.left + r.width / 2 - br.left) / br.width) * 100;
+    y = ((r.top + r.height / 2 - br.top) / br.height) * 100;
+  } else { const p = seatPos(t, m.seat); x = p.x; y = p.y; }
+  const key = m.seat + m.kind;
+  box.querySelectorAll(`[data-rk="${key}"]`).forEach((e) => e.remove());
+  const el = document.createElement("div");
+  el.dataset.rk = key;
+  const life = 3200;
+  el.className = "react emoji";
+  el.innerHTML = `<img src="emoji/${m.id}.webp" alt="">`;
+  el.style.left = x + "%"; el.style.top = y + "%";
+  el.style.setProperty("--out", life + "ms");
+  box.appendChild(el);
+  setTimeout(() => el.remove(), life + 450);
+}
+function toggleQuickChat(force) {
+  const el = $("#qc"); if (!el) return;
+  const open = force !== undefined ? force : !S.qcOpen;
+  if (open) {
+    const t = S.table;
+    if (!t || mySeatIdx(t) < 0) { toast("Take a seat to use quick chat."); return; }
+    unlockAudio(); loadVoices(); preloadEmojis();
+  }
+  S.qcOpen = open;
+  if (!open) { el.innerHTML = ""; return; }
+  el.innerHTML = `<div class="qc" role="dialog" aria-label="Quick chat">
+    <h4>Emojis</h4>
+    <div class="emos">${QC_EMOJI.map(([id, n]) => `<button data-emo="${id}" aria-label="${n}" title="${n}"><img src="emoji/${id}.webp" alt=""></button>`).join("")}</div>
+    <h4>Voice lines</h4>
+    <div class="voices">${QC_VOICE.map(([id, n]) => `<button data-vm="${id}">${ICON.soundOn}<span>${esc(n)}</span></button>`).join("")}</div>
+  </div>`;
+  el.querySelector(".qc").addEventListener("click", (e) => {
+    e.stopPropagation();
+    const b = e.target.closest("[data-emo], [data-vm]"); if (!b) return;
+    const kind = b.dataset.emo ? "emoji" : "voice", id = b.dataset.emo || b.dataset.vm;
+    if (Date.now() < (S.qcUntil || 0)) return toast("Easy there. Wait a moment before the next one.");
+    if (!send({ t: "react", kind, id })) return toast("Reconnecting… try again in a moment.");
+    S.qcUntil = Date.now() + (kind === "voice" ? Math.max(2500, VOICE_MS[id]) : 2000);
+    toggleQuickChat(false);
+  });
+}
+document.addEventListener("click", (e) => { if (S.qcOpen && !e.target.closest("#qc, #qcBtn")) toggleQuickChat(false); });
 
 function musicPlay() {
   if (!music.on) return;
@@ -817,6 +926,7 @@ function onMsg(m) {
     renderTable();
     firePreAction(t);
   }
+  else if (m.t === "react") showReact(m);
   else if (m.t === "notfound") { S.tableMissing = true; S.table = null; renderTable(); }
   else if (m.t === "closed") { toast("The host closed the table."); location.hash = ""; }
   else if (m.t === "chat") {
@@ -833,7 +943,7 @@ function route() {
   if (m) openTable(m[1].toUpperCase()); else openLobby();
 }
 function openLobby() {
-  S.code = null; S.table = null; S.screen = "lobby"; S.drawer = false;
+  S.code = null; S.table = null; S.screen = "lobby"; S.drawer = false; S.qcOpen = false;
   send({ t: "lobby" });
   render();
 }
@@ -1007,6 +1117,7 @@ function buildTableShell() {
         <div class="rail"></div>
         <div class="felt"></div>
         <div id="felt"></div>
+        <div class="reacts" id="reacts"></div>
       </div>
     </section>
     <div class="bar" id="bar"></div>
@@ -1019,7 +1130,9 @@ function buildTableShell() {
   </aside>
   <div id="nameOverlay"></div>
   <div id="modal"></div>
+  <div id="qc"></div>
   <div id="champ"></div>`;
+  S.qcOpen = false;
   $("#menuBtn").addEventListener("click", () => openDrawer(S.tab || "chat"));
   bindMusicBtn($("#musicBtn"));
   bindSfxBtn($("#sfxBtn"));
@@ -1439,6 +1552,7 @@ function renderBar() {
   // left: chat, hand rankings, hand label
   const label = "";
   const left = `<button class="iconbtn" id="chatBtn" aria-label="Chat">${ICON.chat}${S.unread ? `<span class="badge-n">${S.unread}</span>` : ""}</button>
+    <button class="iconbtn" id="qcBtn" aria-label="Quick chat" title="Emojis and voice lines">${ICON.smile}</button>
     <button class="iconbtn" id="handsBtn" aria-label="Hand rankings">${ICON.cards}</button>${label}`;
   if (left !== S.barL) {
     const hadLabel = S.barLabel;
@@ -1446,6 +1560,7 @@ function renderBar() {
     $("#barLeft").innerHTML = left;
     $("#chatBtn").addEventListener("click", () => openDrawer("chat"));
     $("#handsBtn").addEventListener("click", () => openDrawer("hands"));
+    $("#qcBtn").addEventListener("click", (e) => { e.stopPropagation(); toggleQuickChat(); });
     const hl = $("#barLeft .hl"); if (hl && label !== hadLabel) hl.classList.add("enter");
   }
   // right: actions; panel: raise amount
@@ -1627,6 +1742,7 @@ function firePreAction(t) {
   else renderBar();
 }
 function onKey(e) {
+  if (e.key === "Escape" && S.qcOpen) return toggleQuickChat(false);
   if (e.key === "Escape" && S.drawer) return closeDrawer();
   if (S.screen !== "table" || e.target.closest("input, textarea, select")) return;
   const t = S.table; if (!t || mySeatIdx(t) !== t.toAct) return;
