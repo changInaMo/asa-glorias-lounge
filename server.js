@@ -19,6 +19,9 @@ const STAKES = {
 const LEVEL_MINS = [3, 5, 8, 10]; // tournament: blinds double this often
 const MAX_BUYINS = 2;             // casual: buy-ins per player per table, counting the first one
 const TIMERS = [0, 30, 45, 90];
+// quick chat: the files in public/emoji and public/vm, with how long each voice clip runs (ms)
+const EMOJI_MS = { cry: 1, wink: 1, rofl: 1, vomit: 1, grin: 1 };
+const VOICE_MS = { aww: 3240, gaee: 1670, halaka: 2640, kupal: 10370, meow: 1230, paldo: 4080, pwede: 1380, walangkanin: 3340 };
 const GONE_MS = 25000;        // a player with no open page for this long gets folded / sat out
 const HOST_HANDOFF_MS = 60000; // host controls move to another player after this long away
 const MAX_TABLES = 300;
@@ -342,6 +345,18 @@ function handle(c, m) {
       if (!text || now - (c.lastChat || 0) < 400) return;
       c.lastChat = now;
       for (const o of connsAt(t)) send(o, { t: "chat", name: c.name, uid: c.uid, text });
+      return;
+    }
+    case "react": {
+      // quick chat: an animated emoji over your seat, or a short voice clip everyone hears
+      if (!s) return send(c, { t: "error", msg: "Take a seat to use quick chat." });
+      const kind = m.kind === "voice" ? "voice" : m.kind === "emoji" ? "emoji" : null;
+      const id = String(m.id || "");
+      if (!kind || !(kind === "voice" ? VOICE_MS : EMOJI_MS)[id]) return;
+      const now = Date.now();
+      if (now < (c.reactUntil || 0)) return send(c, { t: "error", msg: "Easy there. Wait a moment before the next one." });
+      c.reactUntil = now + (kind === "voice" ? Math.max(2500, VOICE_MS[id]) : 2000);
+      for (const o of connsAt(t)) send(o, { t: "react", seat: i, uid: c.uid, kind, id });
       return;
     }
     case "host": {
